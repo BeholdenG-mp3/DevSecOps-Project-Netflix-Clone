@@ -71,7 +71,9 @@ pipeline {
         }
         stage('Deploy to Container') {
             steps {
-                sh 'docker run -d --name netflix -p 8081:80 nasi101/netflix:latest'
+                sh 'docker rm -f netflix || true'
+
+                sh 'docker run -d --name netflix -p 8081:80 gulzaramin/netflix:latest'
             }
         }
         stage('Deploy to Kubernetes') {
