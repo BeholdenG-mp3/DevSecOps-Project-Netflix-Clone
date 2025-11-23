@@ -7,8 +7,10 @@ pipeline {
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
         DOCKER_CREDENTIALS_ID = 'docker'
-        SONAR_CREDENTIALS_ID = 'Sonar-token'
-        TMDB_API_KEY = 'API_KEY'
+        // FIXED: Changed to lowercase 's' (Verify this matches your Jenkins Credential ID!)
+        SONAR_CREDENTIALS_ID = 'sonar-token'
+        // NOTE: Replace 'API_KEY' with your actual TMDB Key if you haven't already
+        TMDB_API_KEY = 'API_KEY' 
     }
     stages {
         stage('Clean Workspace') {
@@ -18,7 +20,8 @@ pipeline {
         }
         stage('Checkout from Git') {
             steps {
-                git branch: 'main', url: 'https://github.com/N4si/DevSecOps-Project.git'
+                // FIXED: Changed to YOUR repository URL so it downloads YOUR code
+                git branch: 'main', url: 'https://github.com/BeholdenG-mp3/DevSecOps-Project-Netflix-Clone.git'
             }
         }
         stage('SonarQube Analysis') {
@@ -66,20 +69,22 @@ pipeline {
         }
         stage('Trivy Image Scan') {
             steps {
-                sh 'trivy image nasi101/netflix:latest > trivyimage.txt'
+                // FIXED: Changed nasi101 to gulzaramin so you scan YOUR image
+                sh 'trivy image gulzaramin/netflix:latest > trivyimage.txt'
             }
         }
         stage('Deploy to Container') {
             steps {
+                // FIXED: Added cleanup step to remove old container to avoid "Name Conflict" error
                 sh 'docker rm -f netflix || true'
-
                 sh 'docker run -d --name netflix -p 8081:80 gulzaramin/netflix:latest'
             }
         }
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+                    // Ensure you created the 'k8s' Secret File credential in Jenkins
+                    withKubeConfig(credentialsId: 'k8s') {
                         sh 'kubectl apply -f Kubernetes/deployment.yml'
                         sh 'kubectl apply -f Kubernetes/service.yml'
                     }
