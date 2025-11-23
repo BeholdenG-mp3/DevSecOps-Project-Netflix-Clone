@@ -5,12 +5,11 @@ pipeline {
         nodejs 'node16'
     }
     environment {
+        PATH = "/usr/local/bin:$PATH"  // Add this line to ensure AWS CLI is found
         SCANNER_HOME = tool 'sonar-scanner'
         DOCKER_CREDENTIALS_ID = 'docker'
-        // FIXED: Changed to lowercase 's' (Verify this matches your Jenkins Credential ID!)
         SONAR_CREDENTIALS_ID = 'sonar-token'
-        // NOTE: Replace 'API_KEY' with your actual TMDB Key if you haven't already
-        TMDB_API_KEY = 'API_KEY' 
+        TMDB_API_KEY = 'API_KEY'
     }
     stages {
         stage('Clean Workspace') {
